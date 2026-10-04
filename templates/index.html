@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Kids Puzzle Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Bubblegum+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FF5E7E;
+            --primary-hover: #FF3B62;
+            --secondary: #00D2D3;
+            --accent: #FECA57;
+            --purple: #8395A7;
+            --bg-grad-1: #0A1128;
+            --bg-grad-2: #1E3799;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #F8F9FA;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Blobs */
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: float 10s infinite alternate;
+        }
+        .blob-1 { top: 10%; left: 10%; width: 300px; height: 300px; background: #FF9F43; }
+        .blob-2 { bottom: 10%; right: 10%; width: 400px; height: 400px; background: #5F27CD; animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 50%; width: 250px; height: 250px; background: #00D2D3; animation-duration: 15s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.2);
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            overflow: hidden;
+        }
+
+        /* Sidebar Setup Area */
+        .sidebar {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 40px 30px;
+            border-right: 1px solid var(--glass-border);
+        }
+
+        .brand {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .brand h1 {
+            font-family: 'Bubblegum Sans', cursive;
+            font-size: 3rem;
+            background: linear-gradient(to right, #FECA57, #FF5E7E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+            text-shadow: 0 4px 15px rgba(255, 94, 126, 0.4);
+        }
+
+        .brand p {
+            font-size: 1rem;
+            color: #C8D6E5;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #FFF;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group label i {
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+
+        select {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #222f3e;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        select:focus, select:hover {
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 210, 211, 0.2);
+            outline: none;
+        }
+
+        .custom-select::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #222f3e;
+            pointer-events: none;
+        }
+
+        /* Main Studio Area */
+        .studio-main {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .upload-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 3px dashed var(--secondary);
+            border-radius: 24px;
+            padding: 50px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-section:hover {
+            background: rgba(0, 210, 211, 0.1);
+            border-color: var(--accent);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 5rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+
+        .upload-section:hover .upload-icon {
+            transform: translateY(-10px) rotate(10deg);
+        }
+
+        .upload-section h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .upload-section p {
+            font-size: 1.1rem;
+            color: #C8D6E5;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            display: none;
+            box-shadow: 0 5px 15px rgba(255, 94, 126, 0.4);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        /* Magic Button */
+        .btn-generate {
+            background: linear-gradient(135deg, var(--primary), #FF9F43);
+            color: white;
+            border: none;
+            padding: 20px;
+            font-size: 1.8rem;
+            font-family: 'Bubblegum Sans', cursive;
+            font-weight: 400;
+            border-radius: 20px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 15px 35px rgba(255, 94, 126, 0.4), inset 0 2px 0 rgba(255,255,255,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-generate::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-20deg);
+            transition: all 0.5s;
+        }
+
+        .btn-generate:hover::before {
+            left: 150%;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 45px rgba(255, 94, 126, 0.6), inset 0 2px 0 rgba(255,255,255,0.4);
+        }
+
+        /* Results Area */
+        .results-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+
+        .results-header h2 {
+            font-size: 2rem;
+            color: var(--accent);
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .video-card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+        }
+
+        .video-wrapper {
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            margin-bottom: 15px;
+            aspect-ratio: 16/9;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-download {
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFF;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-download:hover {
+            background: var(--secondary);
+            color: #111;
+            box-shadow: 0 5px 15px rgba(0, 210, 211, 0.4);
+        }
+
+        /* Loading Screen */
+        .loader-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 17, 40, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .rocket {
+            font-size: 6rem;
+            animation: blastOff 2s infinite ease-in-out alternate;
+            filter: drop-shadow(0 10px 20px rgba(255, 159, 67, 0.5));
+        }
+
+        @keyframes blastOff {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-30px) scale(1.1); }
+        }
+
+        .loading-text {
+            margin-top: 30px;
+            font-size: 2.5rem;
+            font-family: 'Bubblegum Sans', cursive;
+            background: linear-gradient(to right, #FECA57, #FF5E7E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulseText 1.5s infinite;
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Background -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- Fullscreen Loader -->
+    <div class="loader-overlay" id="loader">
+        <div class="rocket">🚀</div>
+        <div class="loading-text" id="loaderText">Starting AI Engines...</div>
+    </div>
+
+    <!-- Main App UI -->
+    <form class="container" id="puzzleForm">
+        
+        <!-- Left Sidebar (Settings) -->
+        <div class="sidebar">
+            <div class="brand">
+                <h1>AI Kids Studio</h1>
+                <p>Automated YouTube Shorts Maker</p>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-gamepad"></i> Game Mode</label>
+                <div class="custom-select">
+                    <select name="puzzle_type">
+                        <option value="guess_animal">🦁 Guess The Animal</option>
+                        <option value="hidden_object">🔍 Find Hidden Object</option>
+                        <option value="emoji_puzzle">😃 Emoji Puzzle</option>
+                        <option value="spot_difference">👀 Spot Difference</option>
+                        <option value="memory_game">🧠 Memory Game</option>
+                        <option value="shape_matching">⭐ Shape Match</option>
+                        <option value="color_matching">🎨 Color Match</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-palette"></i> Visual Theme</label>
+                <div class="custom-select">
+                    <select name="theme">
+                        <option value="cartoon">📺 Cartoon Network</option>
+                        <option value="jungle">🌴 Jungle Safari</option>
+                        <option value="rainbow">🌈 Magical Rainbow</option>
+                        <option value="space">🚀 Outer Space</option>
+                        <option value="learning">📚 Fun Learning</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-stopwatch"></i> Challenge Timer</label>
+                <div class="custom-select">
+                    <select name="duration">
+                        <option value="5">⚡ 5 Sec (Fast Paced)</option>
+                        <option value="10" selected>⏱️ 10 Sec (Standard)</option>
+                        <option value="15">🐢 15 Sec (Relaxed)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-microphone-lines"></i> AI Voice Actor</label>
+                <div class="custom-select">
+                    <select name="voice">
+                        <option value="kids_boy">🧒 Joyful Boy</option>
+                        <option value="kids_girl">👧 Sweet Girl</option>
+                        <option value="teacher">👩‍🏫 Miss Teacher</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Main Area (Upload & Render) -->
+        <div class="studio-main">
+            
+            <div class="upload-section" onclick="document.getElementById('images').click()">
+                <div class="badge-count" id="badgeCount">0 Files</div>
+                <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                <h2>Drag & Drop Assets</h2>
+                <p>Upload your images here. The AI will automatically generate a separate video for each image you upload.</p>
+                <input type="file" id="images" name="images" multiple accept="image/*">
+            </div>
+
+            <button type="submit" class="btn-generate">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> 
+                GENERATE MAGIC VIDEOS
+            </button>
+
+            <!-- Results Section -->
+            <div class="results-container" id="resultsArea">
+                <div class="results-header">
+                    <h2><i class="fa-solid fa-party-horn"></i> Your Videos Are Ready!</h2>
+                </div>
+                <div class="video-grid" id="videoGrid">
+                    <!-- Dynamic video cards go here -->
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+    <script>
+        // Handle file selection updates
+        const fileInput = document.getElementById('images');
+        const badgeCount = document.getElementById('badgeCount');
+
+        fileInput.addEventListener('change', (e) => {
+            const count = e.target.files.length;
+            if (count > 0) {
+                badgeCount.style.display = 'block';
+                badgeCount.innerHTML = `<i class="fa-solid fa-check"></i> ${count} File(s) Ready`;
+            } else {
+                badgeCount.style.display = 'none';
+            }
+        });
+
+        // Handle form submission and generation
+        document.getElementById('puzzleForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const loader = document.getElementById('loader');
+            const loaderText = document.getElementById('loaderText');
+            const resultsArea = document.getElementById('resultsArea');
+            const videoGrid = document.getElementById('videoGrid');
+            
+            loader.style.display = 'flex';
+            resultsArea.style.display = 'none';
+            videoGrid.innerHTML = '';
+            
+            // Dynamic loading status messages
+            const messages = [
+                "Analyzing Images... 🔍",
+                "Building Puzzle Logic... 🧩",
+                "Adding Zoom & Bounce Effects... ✨",
+                "Synthesizing Kids Voiceover... 🗣️",
+                "Adding Pop Sound Effects... 🎵",
+                "Rendering Vertical Video... 🎬"
+            ];
+            
+            let msgIndex = 0;
+            const msgInterval = setInterval(() => {
+                msgIndex = (msgIndex + 1) % messages.length;
+                loaderText.innerText = messages[msgIndex];
+            }, 2500);
+
+            try {
+                // Call the Flask backend API we created
+                const response = await fetch('/generate-puzzle', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                clearInterval(msgInterval);
+                loader.style.display = 'none';
+
+                if(result.success) {
+                    resultsArea.style.display = 'block';
+                    
+                    result.videos.forEach((videoUrl, index) => {
+                        const filename = videoUrl.split('/').pop();
+                        
+                        const videoCard = document.createElement('div');
+                        videoCard.className = 'video-card';
+                        videoCard.innerHTML = `
+                            <div class="video-wrapper">
+                                <video src="${videoUrl}" controls loop autoplay></video>
+                            </div>
+                            <a href="/download/${filename}" class="btn-download">
+                                <i class="fa-solid fa-cloud-arrow-down"></i> Save Video ${index + 1}
+                            </a>
+                        `;
+                        videoGrid.appendChild(videoCard);
+                    });
+                    
+                    // Smooth scroll to the results
+                    resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                } else {
+                    alert('Oops! ' + result.message);
+                }
+
+            } catch (error) {
+                clearInterval(msgInterval);
+                loader.style.display = 'none';
+                alert('Something went wrong. Please check your connection and try again.');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>

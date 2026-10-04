@@ -1,0 +1,9 @@
+streamlit==1.32.0
+moviepy==1.0.3
+opencv-python==4.9.0.80
+librosa==0.10.1
+Pillow==10.2.0
+openai-whisper==20231117
+torch==2.2.1
+torchvision==0.17.1
+torchaudio==2.2.1

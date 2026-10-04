@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\Users\dell\OneDrive\Desktop\kpg\app.py", line 56, in generate_puzzle_video
+    output_filename = generate_guess_animal_video(img_path, theme, duration, app.config['OUTPUT_FOLDER'])
+  File "C:\Users\dell\OneDrive\Desktop\kpg\modules\guess_the_animal_engine.py", line 28, in generate_guess_animal_video
+    bg_array = generate_background(theme=theme, width=w, height=h)
+  File "C:\Users\dell\OneDrive\Desktop\kpg\modules\background_generator.py", line 31, in generate_background
+    raise FileNotFoundError(f"No background images found in {theme_dir}. Please add some images (e.g., background_1.png).")
+FileNotFoundError: No background images found in assets\themes\cartoon_network. Please add some images (e.g., background_1.png).
